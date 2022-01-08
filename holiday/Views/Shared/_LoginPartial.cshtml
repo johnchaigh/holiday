@@ -1,0 +1,45 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        
+     <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="" asp-controller="Holiday" asp-action="Index">Holidays</a>
+     </li>
+     <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="" asp-controller="Holiday" asp-action="ShowsearchForm">Search</a>
+     </li>
+
+
+        <div class="btn-group">
+            <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                @User.Identity.Name
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Manage your Account</a>
+                </li>
+                <div class="dropdown-divider"></div>
+                <li class="nav-item">
+                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+
+    }
+
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        </li>
+    }
+</div>
