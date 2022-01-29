@@ -5,14 +5,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Holidays.Models;
 using holiday.Data;
+using System.Security.Claims;
 
 namespace holiday.Controllers
 {
     public class HolidayController : Controller
-    {
+    { 
+
         private readonly ApplicationDbContext _context;
 
         public HolidayController(ApplicationDbContext context)
@@ -32,10 +35,26 @@ namespace holiday.Controllers
             return View("Index", await _context.Holiday.Where(j => j.HolidayName.Contains(SearchPhrase)).ToListAsync());
         }
 
-        // GET: Holiday
-        public async Task<IActionResult> Index()
+        // Get: Holiday index with sort options
+        public ActionResult Index(string sortOrder)
+
         {
-            return View(await _context.Holiday.ToListAsync());
+            string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ViewBag.Id = id;
+            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
+            var holidays = from s in _context.Holiday.Where(j => j.UserId.Contains(id)) select s;
+
+            switch (sortOrder)
+            {
+                case "Date":
+                    holidays = _context.Holiday.Where(j => j.UserId.Contains(id)).OrderBy(s => s.StartDate);
+                    break;
+                default:
+                    holidays = _context.Holiday.Where(j => j.UserId.Contains(id)).OrderBy(s => s.HolidayName);
+                    break;
+            }
+            return View(holidays.ToList());
         }
 
         // GET: Holiday/Details/5
@@ -59,6 +78,29 @@ namespace holiday.Controllers
         // GET: Holiday/Create
         public IActionResult Create()
         {
+
+            //TODO Calculate cost automatically from weekdays in view
+
+            // Created for hidden field in view to store owner of entry
+            string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ViewBag.Id = id;
+
+            //Calculate current cost of submitted holidays and send to view
+            //Denial of creation will be handled in browser
+
+            // Get holidays currently created by user
+            var holidays = _context.Holiday.Where(j => j.UserId.Contains(id));
+            // Check for valid entried in the database
+            if (holidays != null)
+            {
+                // Iterate over the variable and add 'cost' to int total
+                int total = 0;
+                foreach (var holiday in holidays)
+                    total += holiday.Cost;
+
+                ViewBag.Total = total;
+            }
+            else { }
             return View();
         }
 
@@ -67,7 +109,7 @@ namespace holiday.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,HolidayName,UserId,StartDate,EndDate,Approved,Type")] Holiday holiday)
+        public async Task<IActionResult> Create([Bind("id,HolidayName,UserId,StartDate,EndDate,Approved,Type,Cost")] Holiday holiday)
         {
             if (ModelState.IsValid)
             {
@@ -99,7 +141,7 @@ namespace holiday.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id,HolidayName,UserId,StartDate,EndDate,Approved,Type")] Holiday holiday)
+        public async Task<IActionResult> Edit(int id, [Bind("id,HolidayName,UserId,StartDate,EndDate,Approved,Type,Cost")] Holiday holiday)
         {
             if (id != holiday.id)
             {

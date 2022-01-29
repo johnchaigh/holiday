@@ -51,7 +51,8 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Back to List</a> |
+    <a class="link-danger" asp-action="Delete" asp-route-id="@Model?.id">Delete</a>
 </div>
 
 @section Scripts {

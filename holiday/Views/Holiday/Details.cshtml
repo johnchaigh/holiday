@@ -1,54 +1,51 @@
 @model Holidays.Models.Holiday
+@using Microsoft.AspNetCore.Components.Web
 
-@{
-    ViewData["Title"] = "Details";
-}
+@{ ViewData["Title"] = "Details"; }
 
 <h1>Details</h1>
 
 <div>
-    <h4>Holiday</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HolidayName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HolidayName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StartDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EndDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EndDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Approved)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Approved)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Type)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Type)
-        </dd>
-    </dl>
+    <h3>@Html.DisplayFor(model => model.HolidayName)</h3>
+    <p class="h5" id="approvedStatus"></p>
+    <script>
+        var _approvedStatus = Number(@Html.DisplayFor(model => model.Approved));
+        if (_approvedStatus == 0) {
+            var message = "Awaiting Approval";
+            document.getElementById("approvedStatus").style.color = "#FFA200";
+        }
+        else if (_approvedStatus == 1) {
+            var message = "Approved";
+            document.getElementById("approvedStatus").style.color = "green";
+        }
+        else {
+            var message = "Holiday has been denied";
+            document.getElementById("approvedStatus").style.color = "red";
+        }
+        document.getElementById("approvedStatus").innerHTML = message;
+    </script>
+    <table class="table table-borderless">
+        <tr>
+            <td class="fw-bold"> @Html.DisplayNameFor(model => model.StartDate)</td>
+            <td> @Html.DisplayFor(model => model.StartDate)</td>
+        </tr>
+        <tr>
+            <td class="fw-bold"> @Html.DisplayNameFor(model => model.EndDate)</td>
+            <td> @Html.DisplayFor(model => model.EndDate)</td>
+        </tr>
+        <tr>
+            <td class="fw-bold"> @Html.DisplayNameFor(model => model.Cost)</td>
+            <td> @Html.DisplayFor(model => model.Cost)</td>
+        </tr>
+        <tr>
+            <td class="fw-bold"> @Html.DisplayNameFor(model => model.Type)</td>
+            <td> @Html.DisplayFor(model => model.Type)</td>
+        </tr>
+    </table>
+
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Back to List</a> |
+    <a class="link-danger" asp-action="Delete" asp-route-id="@Model?.id">Delete</a>
 </div>

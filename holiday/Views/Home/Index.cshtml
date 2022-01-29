@@ -1,9 +1,21 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@using holiday.Areas.Identity.Data
+@using holiday.Data
+@inject UserManager<ApplicationUser> UserManager
+
+
+@{
+
+
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
+
     <h1 class="display-4">Welcome</h1>
+    <p>Username: @ViewBag.Id</p>
+    <h1>Name: @UserManager.GetUserAsync(User).Result?.firstName @UserManager.GetUserAsync(User).Result?.lastName</h1>
+    <h2>Allocation is: @UserManager.GetUserAsync(User).Result?.allocation </h2>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
 

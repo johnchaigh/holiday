@@ -1,13 +1,14 @@
+@using Microsoft.AspNetCore.Identity
+@using holiday.Data
 @model Holidays.Models.Holiday
 
-@{
-    ViewData["Title"] = "Create";
-}
+@inject UserManager<ApplicationUser> UserManager
 
-<h1>Create</h1>
+@{ ViewData["Title"] = "Create"; }
 
-<h4>Holiday</h4>
-<hr />
+<h1>New Holiday Request</h1>
+<h4>Day remining: <span id="days_remain"</span></h4>
+
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
@@ -18,8 +19,7 @@
                 <span asp-validation-for="HolidayName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="hidden" value="@User.Identity.Name" asp-for="UserId" class="form-control" />
-                <span asp-validation-for="UserId" class="text-danger"></span>
+                <input asp-for="UserId" type="hidden" value="@ViewBag.Id" class="form-control" />
             </div>
             <div class="form-group">
                 <label asp-for="StartDate" class="control-label"></label>
@@ -30,6 +30,14 @@
                 <label asp-for="EndDate" class="control-label"></label>
                 <input asp-for="EndDate" class="form-control" />
                 <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Cost" class="control-label"></label>
+                <input id="cost" type="number" min="0" asp-for="Cost" class="form-control" />
+                <span asp-validation-for="Cost" class="text-danger"></span>
+                <small style="display: none" id="overAllocation" class="text-danger">This will take you over your allocation</small>
+                <small style="display: none" id="underAllocation" class="text-success">This will leave you: <span id="daysremaining"></span> days for the year.</small>
+
             </div>
             <div class="form-group">
                 <input type="hidden" asp-for="Approved" class="form-control" value="0" />
@@ -45,15 +53,41 @@
                 </select>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input id="submit" type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
-</div>
+    </div>
 </div>
 
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+<script>
+
+    window.onload = function () {
+    var daysRemain = (Number(@UserManager.GetUserAsync(User).Result?.allocation) - Number(@ViewBag.Total));
+    document.getElementById("days_remain").innerHTML = daysRemain;
+        document.getElementById("cost").onkeyup = function () {
+            var newBalance = daysRemain - this.value;
+
+            if (newBalance >= 0) {
+                document.getElementById('underAllocation').style.display = "block"
+                document.getElementById('overAllocation').style.display = "none";
+                document.getElementById('daysremaining').innerHTML = newBalance;
+            }
+            else {
+                document.getElementById('overAllocation').style.display = "block";
+                document.getElementById('underAllocation').style.display = "none";
+            }
+            if (this.value == null) {
+                document.getElementById('underAllocation').style.display = "none";
+                document.getElementById('overAllocation').style.display = "none";
+            }
+        }
+    }
+</script>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -1,6 +1,9 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using holiday.Models;
+using Microsoft.AspNetCore.Identity;
+using holiday.Data;
+using System.Security.Claims;
 
 namespace holiday.Controllers;
 
@@ -15,9 +18,10 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
+        string Id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        ViewBag.Id = Id;
         return View();
     }
-
     public IActionResult Privacy()
     {
         return View();

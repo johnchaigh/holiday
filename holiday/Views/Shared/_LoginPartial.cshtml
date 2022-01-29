@@ -1,6 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+@using holiday.Data
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
@@ -16,7 +18,7 @@
 
         <div class="btn-group">
             <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                @User.Identity.Name
+                @UserManager.GetUserAsync(User).Result?.firstName @UserManager.GetUserAsync(User).Result?.lastName
             </button>
             <ul class="dropdown-menu dropdown-menu-end">
                 <li class="nav-item">
@@ -41,5 +43,7 @@
         <li class="nav-item">
             <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
         </li>
+
+
     }
 </div>
