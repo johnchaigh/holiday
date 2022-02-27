@@ -6,8 +6,7 @@
 
 @{ ViewData["Title"] = "Index"; }
 
-<h1>Your Holidays</h1>
-<h4>Username: @ViewBag.Id</h4>
+<h2>Your Holidays</h2>
 
 <p>
     <a asp-action="Create">Request New Holiday</a>
@@ -23,7 +22,12 @@
     var daysremain = allocation - Number(daysTaken);
     document.getElementById("days_remain").innerHTML = daysremain;
 </script>
-
+@if (ViewBag.toApprove.Count > 0)
+    {
+        <button type="button" class="btn btn-primary">
+            Waiting for Approval <span class="badge badge-light">@ViewBag.toApprove.Count</span>
+        </button>
+    }
 <table class="table">
     <thead>
         <tr>
@@ -71,8 +75,7 @@
     <td>
         <a asp-action="Edit" asp-route-id="@item.id">Edit</a>
     </td>
-</tr>
-}
+</tr>}
         @foreach (var item in Model.Where(j => j.Approved == 0))
         {
 
@@ -97,38 +100,78 @@
     <td>
         <a asp-action="Edit" asp-route-id="@item.id">Edit</a>
     </td>
-</tr>
-}
+</tr>}
 
         @foreach (var item in Model.Where(j => j.Approved == 2))
         {
-
-<tr>
-    <td class="text-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-down-fill text-danger" viewBox="0 0 16 16">
-            <path d="M6.956 14.534c.065.936.952 1.659 1.908 1.42l.261-.065a1.378 1.378 0 0 0 1.012-.965c.22-.816.533-2.512.062-4.51.136.02.285.037.443.051.713.065 1.669.071 2.516-.211.518-.173.994-.68 1.2-1.272a1.896 1.896 0 0 0-.234-1.734c.058-.118.103-.242.138-.362.077-.27.113-.568.113-.856 0-.29-.036-.586-.113-.857a2.094 2.094 0 0 0-.16-.403c.169-.387.107-.82-.003-1.149a3.162 3.162 0 0 0-.488-.9c.054-.153.076-.313.076-.465a1.86 1.86 0 0 0-.253-.912C13.1.757 12.437.28 11.5.28H8c-.605 0-1.07.08-1.466.217a4.823 4.823 0 0 0-.97.485l-.048.029c-.504.308-.999.61-2.068.723C2.682 1.815 2 2.434 2 3.279v4c0 .851.685 1.433 1.357 1.616.849.232 1.574.787 2.132 1.41.56.626.914 1.28 1.039 1.638.199.575.356 1.54.428 2.591z" />
-        </svg>
-    </td>
-    <td>
-        <a asp-action="Details" asp-route-id="@item.id">@Html.DisplayFor(modelItem => item.HolidayName)</a>
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.StartDate)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.EndDate)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.UserId)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.Cost)
-    </td>
-    <td>
-        <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
-    </td>
-</tr>
-}
+         <tr>
+            <td class="text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-down-fill text-danger" viewBox="0 0 16 16">
+                    <path d="M6.956 14.534c.065.936.952 1.659 1.908 1.42l.261-.065a1.378 1.378 0 0 0 1.012-.965c.22-.816.533-2.512.062-4.51.136.02.285.037.443.051.713.065 1.669.071 2.516-.211.518-.173.994-.68 1.2-1.272a1.896 1.896 0 0 0-.234-1.734c.058-.118.103-.242.138-.362.077-.27.113-.568.113-.856 0-.29-.036-.586-.113-.857a2.094 2.094 0 0 0-.16-.403c.169-.387.107-.82-.003-1.149a3.162 3.162 0 0 0-.488-.9c.054-.153.076-.313.076-.465a1.86 1.86 0 0 0-.253-.912C13.1.757 12.437.28 11.5.28H8c-.605 0-1.07.08-1.466.217a4.823 4.823 0 0 0-.97.485l-.048.029c-.504.308-.999.61-2.068.723C2.682 1.815 2 2.434 2 3.279v4c0 .851.685 1.433 1.357 1.616.849.232 1.574.787 2.132 1.41.56.626.914 1.28 1.039 1.638.199.575.356 1.54.428 2.591z" />
+                </svg>
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.id">@Html.DisplayFor(modelItem => item.HolidayName)</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cost)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
+            </td>
+         </tr>
+         }
     </tbody>
 
 </table>
+
+@if (ViewBag.toApprove.Count > 0)
+    {
+        <table class="table text-center">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Holiday</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Days Taken</th>
+                <th>Status</th>
+                <th>Approve?</th>
+            </tr>
+        </thead>
+                @for (int i = 0; i < ViewBag.toApprove.Count; i++)
+                    {
+                    <tr>
+                        <td>Name of person</td>
+                        <td>@ViewBag.toApprove[i].HolidayName</td>
+                        <td>@ViewBag.toApprove[i].StartDate</td>
+                        <td>@ViewBag.toApprove[i].EndDate</td>
+                        <td>@ViewBag.toApprove[i].Cost</td>
+                        <td>@ViewBag.toApprove[i].Approved</td>
+                        <td>
+                            <a asp-action="Approve" asp-route-id="@ViewBag.toApprove[i].id">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle-fill text-success" viewBox="0 0 16 16">
+                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                                </svg>
+                            </a>
+                            <a asp-action="Decline" asp-route-id="@ViewBag.toApprove[i].id">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle text-danger" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                                </svg>
+                            </a>
+                         </td>
+                    </tr>
+                    }
+        </table>
+    }
+

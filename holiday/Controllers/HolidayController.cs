@@ -39,12 +39,25 @@ namespace holiday.Controllers
         public ActionResult Index(string sortOrder)
 
         {
+            // Get username string to filter database from for personal holiday records
             string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             ViewBag.Id = id;
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
             var holidays = from s in _context.Holiday.Where(j => j.UserId.Contains(id)) select s;
 
+            // Get email string to filter holiday records that are to be approved by the user
+            string approver = User.FindFirstValue(ClaimTypes.Name);
+            var approve = from s in _context.Holiday.Where(j => j.Approver.Contains(approver)) select s;
+            approve = approve.Where(m => m.Approved == 0);
+
+            // Check if records exist
+            if (approve != null)
+            {
+                ViewBag.toApprove = approve.ToList();
+            }
+        
+           
             switch (sortOrder)
             {
                 case "Date":
@@ -54,7 +67,36 @@ namespace holiday.Controllers
                     holidays = _context.Holiday.Where(j => j.UserId.Contains(id)).OrderBy(s => s.HolidayName);
                     break;
             }
+
             return View(holidays.ToList());
+        }
+
+        /// POST: Called from /Index/ as a method of approval of a specific holiday by line manager
+        public async Task<IActionResult> Approve(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var approve = await _context.Holiday.FirstOrDefaultAsync(m => m.id == id);
+            approve.Approved = 1;
+            _context.Update(approve);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        ///  POST: Called from /Index/ as a method of approval of a specific holiday by line manager
+        public async Task<IActionResult> Decline(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var decline = await _context.Holiday.FirstOrDefaultAsync(m => m.id == id);
+            decline.Approved = 2;
+            _context.Update(decline);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Holiday/Details/5
@@ -109,7 +151,7 @@ namespace holiday.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,HolidayName,UserId,StartDate,EndDate,Approved,Type,Cost")] Holiday holiday)
+        public async Task<IActionResult> Create([Bind("id,HolidayName,UserId,StartDate,EndDate,Approved,Type,Cost,Approver")] Holiday holiday)
         {
             if (ModelState.IsValid)
             {
@@ -141,7 +183,7 @@ namespace holiday.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id,HolidayName,UserId,StartDate,EndDate,Approved,Type,Cost")] Holiday holiday)
+        public async Task<IActionResult> Edit(int id, [Bind("id,HolidayName,UserId,StartDate,EndDate,Approved,Type,Cost,Approver")] Holiday holiday)
         {
             if (id != holiday.id)
             {
@@ -152,8 +194,10 @@ namespace holiday.Controllers
             {
                 try
                 {
-                    _context.Update(holiday);
-                    await _context.SaveChangesAsync();
+
+
+
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {

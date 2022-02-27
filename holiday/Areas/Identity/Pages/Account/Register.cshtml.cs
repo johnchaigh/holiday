@@ -109,6 +109,9 @@ namespace holiday.Areas.Identity.Pages.Account
             [Display(Name = "Last Name")]
             public string lastName { get; set; }
 
+            [Display(Name = "Line Manager's Email Address")]
+            public string? lineManager { get; set; }
+
         }
 
 
@@ -125,7 +128,7 @@ namespace holiday.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 //var user = CreateUser();
-                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, firstName = Input.firstName, lastName = Input.lastName, allocation = Input.allocation };
+                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, firstName = Input.firstName, lastName = Input.lastName, allocation = Input.allocation, lineManager = Input.lineManager };
                 //await _userStore.allocation((ApplicationUser)user, Input.allocation);
                 //await _userStore.SetUserNameAsync((ApplicationUser)user, Input.Email, CancellationToken.None);
                 //await _emailStore.SetEmailAsync((ApplicationUser)user, Input.Email, CancellationToken.None);

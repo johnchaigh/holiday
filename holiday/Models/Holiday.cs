@@ -26,6 +26,9 @@ namespace Holidays.Models
         [Display(Name = "Approval Status")]
         public int Approved { get; set; }
 
+        [Display(Name = "Approver")]
+        public string? Approver { get; set; }
+
         [Display(Name = "Holiday Type")]
         public string Type { get; set; }
 

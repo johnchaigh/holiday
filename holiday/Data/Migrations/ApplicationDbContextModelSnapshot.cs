@@ -15,7 +15,7 @@ namespace holiday.Data.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "6.0.1");
+            modelBuilder.HasAnnotation("ProductVersion", "6.0.2");
 
             modelBuilder.Entity("holiday.Data.ApplicationUser", b =>
                 {
@@ -83,6 +83,9 @@ namespace holiday.Data.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("lineManager")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -103,6 +106,9 @@ namespace holiday.Data.Migrations
 
                     b.Property<int>("Approved")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Approver")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Cost")
                         .HasColumnType("INTEGER");

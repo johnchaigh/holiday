@@ -1,9 +1,13 @@
 ﻿@page
 @model IndexModel
-@{
-    ViewData["Title"] = "Profile";
-    ViewData["ActivePage"] = ManageNavPages.Index;
-}
+@{ ViewData["Title"] = "Profile";
+    ViewData["ActivePage"] = ManageNavPages.Index; }
+
+@using holiday.Data;
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 <h3>@ViewData["Title"]</h3>
 <partial name="_StatusMessage" for="StatusMessage" />

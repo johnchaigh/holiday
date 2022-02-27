@@ -16,3 +16,14 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.login-card {
+    padding: 30vh;
+    border: dashed solid;
+    border-color: black;
+    border-width: thick;
+}
+
+td {
+    text-align: center;
+}
